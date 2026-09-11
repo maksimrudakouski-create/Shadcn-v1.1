@@ -3,14 +3,18 @@ import { Link, useParams } from "@tanstack/react-router";
 import {
   ArrowLeft,
   ArrowRight,
+  Ban,
   Bell,
   Check,
   ChevronRight,
   CircleCheck,
+  CircleAlert,
+  ClipboardCheck,
   CreditCard,
   Eye,
   Plus,
   ReceiptText,
+  RotateCcw,
   ShieldCheck,
   Smartphone,
   Snowflake,
@@ -19,6 +23,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -138,6 +144,8 @@ export function CardDetailScreen({ cards = mockManagedCards, transactions = mock
               <Separator />
               <div className="flex items-center justify-between gap-4"><div><Text className="font-medium">Digital wallets</Text><Text variant="small">{card.walletCount} connected devices</Text></div><Button variant="outline" size="sm" asChild><Link to="/wallet">Manage</Link></Button></div>
               <Separator />
+              <div className="flex items-center justify-between gap-4"><div><Text className="font-medium">Card lifecycle</Text><Text variant="small">Replace, activate, or permanently close this card.</Text></div><Button variant="outline" size="sm" asChild><Link to="/cards/$id/lifecycle" params={{ id: card.id }}>Manage</Link></Button></div>
+              <Separator />
               <Dialog>
                 <DialogTrigger asChild><Button variant="outline" className="w-full"><Eye aria-hidden="true" /> Show card details</Button></DialogTrigger>
                 <DialogContent>
@@ -155,6 +163,87 @@ export function CardDetailScreen({ cards = mockManagedCards, transactions = mock
         </section>
       </div>
     </AppShell>
+  );
+}
+
+type CardLifecycleProps = { cards?: ManagedCard[] };
+
+export function CardLifecycleScreen({ cards = mockManagedCards }: CardLifecycleProps) {
+  const { id } = useParams({ strict: false });
+  const card = cards.find((item) => item.id === id) ?? cards[0] ?? mockManagedCards[0];
+  const [isFrozen, setIsFrozen] = useState(card.status === "Frozen");
+
+  return (
+    <AppShell>
+      <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+        <Button variant="ghost" size="sm" className="-ml-2" asChild><Link to="/cards/$id" params={{ id: card.id }}><ArrowLeft aria-hidden="true" /> {card.label}</Link></Button>
+        <div className="mt-5 flex flex-wrap items-start justify-between gap-4"><div><Text variant="muted">Card lifecycle</Text><Heading level={1} className="mt-1">Manage your card</Heading><Text variant="muted" className="mt-2">Keep {card.label} secure, replace it when needed, or activate a new one.</Text></div><Badge variant={isFrozen ? "outline" : "secondary"}>{isFrozen ? <Snowflake aria-hidden="true" /> : <Check aria-hidden="true" />}{isFrozen ? "Frozen" : "Active"}</Badge></div>
+        <div className="mt-8 grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+          <div><CardVisual card={card} compact /><Card className="mt-4"><CardContent className="flex gap-3 p-4"><CircleAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" /><div><Text className="font-medium">Need help quickly?</Text><Text variant="small" className="mt-1">Freezing your card pauses new purchases while you decide what to do next.</Text></div></CardContent></Card></div>
+          <Card>
+            <CardHeader><CardTitle>Card controls</CardTitle><CardDescription>Changes here apply to your card right away in this prototype.</CardDescription></CardHeader>
+            <CardContent className="divide-y">
+              <div className="flex items-center justify-between gap-5 pb-5"><div><Text className="font-medium">Freeze card</Text><Text variant="small" className="mt-1">Pause new purchases until you are ready to use it again.</Text></div><Switch checked={isFrozen} onCheckedChange={setIsFrozen} aria-label="Freeze card" /></div>
+              <div className="flex items-center justify-between gap-5 py-5"><div><Text className="font-medium">Replace this card</Text><Text variant="small" className="mt-1">Request a replacement for a lost, damaged, or expiring card.</Text></div><Button variant="outline" size="sm" asChild><Link to="/cards/$id/lifecycle/reissue" params={{ id: card.id }}><RotateCcw aria-hidden="true" /> Replace</Link></Button></div>
+              <div className="flex items-center justify-between gap-5 py-5"><div><Text className="font-medium">Activate replacement</Text><Text variant="small" className="mt-1">Activate a new physical card once it arrives.</Text></div><Button variant="outline" size="sm" asChild><Link to="/cards/$id/lifecycle/activate" params={{ id: card.id }}><ClipboardCheck aria-hidden="true" /> Activate</Link></Button></div>
+              <div className="flex items-center justify-between gap-5 pt-5"><div><Text className="font-medium">Terminate card</Text><Text variant="small" className="mt-1">Permanently deactivate this card when it can no longer be used.</Text></div><Button variant="destructive" size="sm" asChild><Link to="/cards/$id/lifecycle/terminate" params={{ id: card.id }}><Ban aria-hidden="true" /> Terminate</Link></Button></div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </AppShell>
+  );
+}
+
+type CardTerminationProps = { cards?: ManagedCard[] };
+
+export function CardTerminationScreen({ cards = mockManagedCards }: CardTerminationProps) {
+  const { id } = useParams({ strict: false });
+  const card = cards.find((item) => item.id === id) ?? cards[0] ?? mockManagedCards[0];
+  const [isTerminated, setIsTerminated] = useState(false);
+
+  if (isTerminated) {
+    return (
+      <AppShell><div className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-2xl flex-col justify-center px-4 py-10 sm:px-6"><div className="mx-auto w-full text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground"><CircleCheck className="size-7" aria-hidden="true" /></span><Text variant="muted" className="mt-6">Card terminated</Text><Heading level={1} className="mt-1">{card.label} is no longer active</Heading><Text variant="muted" className="mx-auto mt-2 max-w-lg">New purchases have been disabled. If you still need a card, you can request a replacement.</Text></div><div className="mx-auto mt-7 flex w-full max-w-md flex-col gap-3 sm:flex-row"><Button className="flex-1" asChild><Link to="/cards/$id/lifecycle/reissue" params={{ id: card.id }}>Request replacement</Link></Button><Button variant="outline" className="flex-1" asChild><Link to="/cards">All cards</Link></Button></div></div></AppShell>
+    );
+  }
+
+  return (
+    <AppShell><div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-10"><Button variant="ghost" size="sm" className="-ml-2" asChild><Link to="/cards/$id/lifecycle" params={{ id: card.id }}><ArrowLeft aria-hidden="true" /> Card lifecycle</Link></Button><div className="mt-5"><Text variant="muted">Permanent action</Text><Heading level={1} className="mt-1">Terminate {card.label}?</Heading><Text variant="muted" className="mt-2">This permanently deactivates the card at the issuer and stops future transactions.</Text></div><Card className="mt-8 border-destructive/30"><CardContent className="flex gap-3 p-5"><CircleAlert className="mt-0.5 size-5 shrink-0 text-destructive" aria-hidden="true" /><div><Text className="font-medium">This can’t be undone</Text><Text variant="small" className="mt-1">Your card will be inactive in the app. You can request a replacement after termination.</Text></div></CardContent></Card><div className="mt-6 flex flex-wrap gap-3"><Button variant="destructive" onClick={() => setIsTerminated(true)}><Ban aria-hidden="true" /> Terminate card</Button><Button variant="outline" asChild><Link to="/cards/$id/lifecycle" params={{ id: card.id }}>Keep card</Link></Button></div></div></AppShell>
+  );
+}
+
+type CardReissueProps = { cards?: ManagedCard[] };
+
+export function CardReissueScreen({ cards = mockManagedCards }: CardReissueProps) {
+  const { id } = useParams({ strict: false });
+  const card = cards.find((item) => item.id === id) ?? cards[0] ?? mockManagedCards[0];
+  const [reason, setReason] = useState<"lost" | "damaged" | "expiring">("lost");
+  const [isRequested, setIsRequested] = useState(false);
+  const reasonCopy = { lost: "Lost or stolen", damaged: "Damaged", expiring: "Expiring soon" };
+
+  if (isRequested) {
+    return <AppShell><div className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-2xl flex-col justify-center px-4 py-10 sm:px-6"><div className="mx-auto w-full text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground"><CircleCheck className="size-7" aria-hidden="true" /></span><Text variant="muted" className="mt-6">Replacement requested</Text><Heading level={1} className="mt-1">Your new card is on its way</Heading><Text variant="muted" className="mx-auto mt-2 max-w-lg">We’ll let you know when it arrives. Once it does, activate it to keep using your account.</Text></div><div className="mx-auto mt-7 flex w-full max-w-md flex-col gap-3 sm:flex-row"><Button className="flex-1" asChild><Link to="/cards/$id/lifecycle/activate" params={{ id: card.id }}>Activate replacement</Link></Button><Button variant="outline" className="flex-1" asChild><Link to="/cards/$id/lifecycle" params={{ id: card.id }}>Card lifecycle</Link></Button></div></div></AppShell>;
+  }
+
+  return (
+    <AppShell><div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-10"><Button variant="ghost" size="sm" className="-ml-2" asChild><Link to="/cards/$id/lifecycle" params={{ id: card.id }}><ArrowLeft aria-hidden="true" /> Card lifecycle</Link></Button><div className="mt-5"><Text variant="muted">Replacement card</Text><Heading level={1} className="mt-1">Why do you need a replacement?</Heading><Text variant="muted" className="mt-2">Choose the reason that best describes what happened to {card.label}.</Text></div><div className="mt-8 grid gap-3 sm:grid-cols-3">{(Object.keys(reasonCopy) as Array<keyof typeof reasonCopy>).map((option) => <Button key={option} variant={reason === option ? "default" : "outline"} className="h-auto justify-start p-4 text-left" onClick={() => setReason(option)}><span><span className="block text-sm font-semibold">{reasonCopy[option]}</span><span className="mt-1 block text-xs font-normal opacity-75">{option === "lost" ? "We’ll help keep your account secure." : option === "damaged" ? "Replace a card that no longer works." : "Get a new card before the old one expires."}</span></span></Button>)}</div><Card className="mt-6"><CardHeader><CardTitle>Review replacement</CardTitle><CardDescription>{reasonCopy[reason]} · A new physical card will be sent to your saved address.</CardDescription></CardHeader><CardContent className="flex flex-wrap gap-3"><Button onClick={() => setIsRequested(true)}>Request replacement <ArrowRight aria-hidden="true" /></Button><Button variant="outline" asChild><Link to="/profile">Review address</Link></Button></CardContent></Card></div></AppShell>
+  );
+}
+
+type CardActivationProps = { cards?: ManagedCard[] };
+
+export function CardActivationScreen({ cards = mockManagedCards }: CardActivationProps) {
+  const { id } = useParams({ strict: false });
+  const card = cards.find((item) => item.id === id) ?? cards[0] ?? mockManagedCards[0];
+  const [isActivated, setIsActivated] = useState(false);
+
+  if (isActivated) {
+    return <AppShell><div className="mx-auto flex min-h-[calc(100svh-4rem)] max-w-2xl flex-col justify-center px-4 py-10 sm:px-6"><div className="mx-auto w-full text-center"><span className="mx-auto flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground"><CircleCheck className="size-7" aria-hidden="true" /></span><Text variant="muted" className="mt-6">Card activated</Text><Heading level={1} className="mt-1">Your replacement is ready</Heading><Text variant="muted" className="mx-auto mt-2 max-w-lg">You can now use your replacement card for purchases and digital wallets.</Text></div><div className="mx-auto mt-7 flex w-full max-w-md flex-col gap-3 sm:flex-row"><Button className="flex-1" asChild><Link to="/cards/$id" params={{ id: card.id }}>Manage card</Link></Button><Button variant="outline" className="flex-1" asChild><Link to="/wallet">Add to wallet</Link></Button></div></div></AppShell>;
+  }
+
+  return (
+    <AppShell><div className="mx-auto w-full max-w-2xl px-4 py-8 sm:px-6 sm:py-10"><Button variant="ghost" size="sm" className="-ml-2" asChild><Link to="/cards/$id/lifecycle" params={{ id: card.id }}><ArrowLeft aria-hidden="true" /> Card lifecycle</Link></Button><div className="mt-5"><Text variant="muted">Replacement card</Text><Heading level={1} className="mt-1">Activate your new card</Heading><Text variant="muted" className="mt-2">Enter the last four digits printed on your replacement card.</Text></div><Card className="mt-8"><CardHeader><CardTitle>Card activation</CardTitle><CardDescription>Activation follows the same secure step used for physical cards.</CardDescription></CardHeader><CardContent><form className="space-y-5" onSubmit={(event) => { event.preventDefault(); setIsActivated(true); }}><div className="space-y-2"><Label htmlFor="replacement-card-digits">Last four digits</Label><Input id="replacement-card-digits" inputMode="numeric" maxLength={4} placeholder="1234" /></div><Button type="submit" className="w-full"><ClipboardCheck aria-hidden="true" /> Activate card</Button></form></CardContent></Card></div></AppShell>
   );
 }
 

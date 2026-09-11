@@ -27,9 +27,28 @@ import {
   TwoFactorScreen,
 } from "./auth/AuthScreens";
 import { KycApprovedScreen, KycPendingScreen, KycRejectedScreen, KycStartScreen } from "./kyc/KycScreens";
-import { CardDetailScreen, CardIssueScreen, CardIssuedScreen, CardsScreen, WalletIntegrationScreen, WalletSetupScreen } from "./cards/CardScreens";
+import {
+  CardActivationScreen,
+  CardDetailScreen,
+  CardIssueScreen,
+  CardIssuedScreen,
+  CardLifecycleScreen,
+  CardReissueScreen,
+  CardTerminationScreen,
+  CardsScreen,
+  WalletIntegrationScreen,
+  WalletSetupScreen,
+} from "./cards/CardScreens";
 import { HomeScreen, StatementScreen } from "./home/HomeScreens";
 import { NotificationPreferencesScreen, NotificationsScreen } from "./notifications/NotificationScreens";
+import {
+  FundingScreen,
+  PayoutScreen,
+  RewardsScreen,
+  SendMoneyScreen,
+  TransactionDetailScreen,
+  TransactionsScreen,
+} from "./transactions/TransactionScreens";
 
 export type FlowRoute = {
   /** "/" | "loans" | ":id". Nested under the parent's path. */
@@ -74,6 +93,18 @@ export const routes: FlowRoute[] = [
   { path: "security", component: SecurityScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Security and 2FA" } },
   { path: "home", component: HomeScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Home dashboard" } },
   {
+    path: "transactions",
+    component: TransactionsScreen,
+    meta: { role: "user", flow: "Transactions", label: "All transactions" },
+    children: [
+      { path: "fund", component: FundingScreen, meta: { role: "user", flow: "Transactions", label: "Add money" } },
+      { path: "payout", component: PayoutScreen, meta: { role: "user", flow: "Transactions", label: "Make a pay-out" } },
+      { path: "send", component: SendMoneyScreen, meta: { role: "user", flow: "Transactions", label: "Send money" } },
+      { path: "rewards", component: RewardsScreen, meta: { role: "user", flow: "Transactions", label: "Rewards" } },
+      { path: ":id", component: TransactionDetailScreen, meta: { role: "user", flow: "Transactions", label: "Transaction details", sampleParams: { id: "fps-top-up" } } },
+    ],
+  },
+  {
     path: "cards",
     component: CardsScreen,
     meta: { role: "user", flow: "Card Issuing & Management", label: "Your cards" },
@@ -81,6 +112,16 @@ export const routes: FlowRoute[] = [
       { path: "issue", component: CardIssueScreen, meta: { role: "user", flow: "Card Issuing & Management", label: "Choose card type" } },
       { path: "issue/complete", component: CardIssuedScreen, meta: { role: "user", flow: "Card Issuing & Management", label: "Virtual card issued" } },
       { path: ":id", component: CardDetailScreen, meta: { role: "user", flow: "Card Issuing & Management", label: "Card controls", sampleParams: { id: "northstar-debit" } } },
+      {
+        path: ":id/lifecycle",
+        component: CardLifecycleScreen,
+        meta: { role: "user", flow: "Card Lifecycle", label: "Manage card lifecycle", sampleParams: { id: "northstar-debit" } },
+        children: [
+          { path: "terminate", component: CardTerminationScreen, meta: { role: "user", flow: "Card Lifecycle", label: "Terminate card", sampleParams: { id: "northstar-debit" } } },
+          { path: "reissue", component: CardReissueScreen, meta: { role: "user", flow: "Card Lifecycle", label: "Replace card", sampleParams: { id: "northstar-debit" } } },
+          { path: "activate", component: CardActivationScreen, meta: { role: "user", flow: "Card Lifecycle", label: "Activate replacement", sampleParams: { id: "northstar-debit" } } },
+        ],
+      },
     ],
   },
   {
