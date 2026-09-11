@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Bell, CreditCard, House, ShieldCheck, UserRound } from "lucide-react";
+import { Bell, CreditCard, House, ShieldCheck, UserRound, Wallet } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +11,7 @@ type Props = {
 const navItems = [
   { to: "/home", label: "Home", icon: House },
   { to: "/cards", label: "Cards", icon: CreditCard },
+  { to: "/wallet", label: "Wallet", icon: Wallet },
   { to: "/notifications", label: "Notifications", icon: Bell },
   { to: "/profile", label: "Profile", icon: UserRound },
 ];

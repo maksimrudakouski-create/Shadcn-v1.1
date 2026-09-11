@@ -27,7 +27,9 @@ import {
   TwoFactorScreen,
 } from "./auth/AuthScreens";
 import { KycApprovedScreen, KycPendingScreen, KycRejectedScreen, KycStartScreen } from "./kyc/KycScreens";
-import { CardsScreen, HomeScreen, NotificationsScreen, StatementScreen } from "./home/HomeScreens";
+import { CardDetailScreen, CardIssueScreen, CardIssuedScreen, CardsScreen, WalletIntegrationScreen, WalletSetupScreen } from "./cards/CardScreens";
+import { HomeScreen, StatementScreen } from "./home/HomeScreens";
+import { NotificationPreferencesScreen, NotificationsScreen } from "./notifications/NotificationScreens";
 
 export type FlowRoute = {
   /** "/" | "loans" | ":id". Nested under the parent's path. */
@@ -71,7 +73,31 @@ export const routes: FlowRoute[] = [
   { path: "password", component: PasswordScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Manage password" } },
   { path: "security", component: SecurityScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Security and 2FA" } },
   { path: "home", component: HomeScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Home dashboard" } },
-  { path: "cards", component: CardsScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Cards" } },
-  { path: "notifications", component: NotificationsScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Notifications" } },
+  {
+    path: "cards",
+    component: CardsScreen,
+    meta: { role: "user", flow: "Card Issuing & Management", label: "Your cards" },
+    children: [
+      { path: "issue", component: CardIssueScreen, meta: { role: "user", flow: "Card Issuing & Management", label: "Choose card type" } },
+      { path: "issue/complete", component: CardIssuedScreen, meta: { role: "user", flow: "Card Issuing & Management", label: "Virtual card issued" } },
+      { path: ":id", component: CardDetailScreen, meta: { role: "user", flow: "Card Issuing & Management", label: "Card controls", sampleParams: { id: "northstar-debit" } } },
+    ],
+  },
+  {
+    path: "wallet",
+    component: WalletIntegrationScreen,
+    meta: { role: "user", flow: "Wallet Integration", label: "Digital wallets" },
+    children: [
+      { path: ":wallet", component: WalletSetupScreen, meta: { role: "user", flow: "Wallet Integration", label: "Wallet setup", sampleParams: { wallet: "apple-wallet" } } },
+    ],
+  },
+  {
+    path: "notifications",
+    component: NotificationsScreen,
+    meta: { role: "user", flow: "Notifications", label: "Notification centre" },
+    children: [
+      { path: "preferences", component: NotificationPreferencesScreen, meta: { role: "user", flow: "Notifications", label: "Alert preferences" } },
+    ],
+  },
   { path: "statement", component: StatementScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Account statement" } },
 ];

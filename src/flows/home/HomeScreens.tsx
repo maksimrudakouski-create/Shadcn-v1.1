@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowDownToLine, ArrowUpRight, Bell, Check, ChevronRight, CreditCard, ReceiptText } from "lucide-react";
+import { ArrowDownToLine, Bell, Check, ChevronRight, CreditCard, ReceiptText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { AppShell } from "@/shared/ui/app-shell";
 import { Heading, Text } from "@/shared/ui/typography";
-import { type AccountOverview, type ActivityItem, type NotificationItem, type PaymentCard, type Profile, mockAccountOverview, mockActivity, mockNotifications, mockPaymentCard, mockProfile } from "../_mocks/account";
+import { type AccountOverview, type ActivityItem, type Profile, mockAccountOverview, mockActivity, mockProfile } from "../_mocks/account";
 
 type HomeProps = { profile?: Profile; overview?: AccountOverview; activity?: ActivityItem[] };
 
@@ -32,18 +32,6 @@ export function HomeScreen({ profile = mockProfile, overview = mockAccountOvervi
       </div>
     </AppShell>
   );
-}
-
-type NotificationsProps = { notifications?: NotificationItem[] };
-
-export function NotificationsScreen({ notifications = mockNotifications }: NotificationsProps) {
-  return <AppShell><div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-10"><div className="flex items-center justify-between gap-4"><div><Heading level={1}>Notifications</Heading><Text variant="muted" className="mt-1">Account news and important updates.</Text></div><Button variant="outline" size="sm" asChild><Link to="/home">Back home</Link></Button></div><Card className="mt-7"><CardContent className="divide-y p-0">{notifications.map((notification) => <div key={notification.id} className="flex gap-4 p-5"><span className="mt-2 size-2 shrink-0 rounded-full bg-primary" aria-label={notification.unread ? "Unread" : "Read"} /><div className="space-y-1"><Text className="font-medium">{notification.title}</Text><Text variant="muted">{notification.description}</Text><Text variant="small">{notification.date}</Text></div></div>)}</CardContent></Card></div></AppShell>;
-}
-
-type CardsProps = { card?: PaymentCard };
-
-export function CardsScreen({ card = mockPaymentCard }: CardsProps) {
-  return <AppShell><div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-10"><Heading level={1}>Cards</Heading><Text variant="muted" className="mt-1">Manage the card connected to your Everyday account.</Text><Card className="mt-7"><CardHeader><CardTitle>{card.label}</CardTitle><CardDescription>{card.type} · {card.number}</CardDescription></CardHeader><CardContent className="flex flex-wrap items-center justify-between gap-4"><Badge variant="secondary"><Check aria-hidden="true" /> {card.status}</Badge><Button variant="outline" asChild><Link to="/statement">View statement <ArrowUpRight aria-hidden="true" /></Link></Button></CardContent></Card></div></AppShell>;
 }
 
 type StatementProps = { overview?: AccountOverview };
