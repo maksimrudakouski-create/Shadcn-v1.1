@@ -26,6 +26,8 @@ import {
   SignUpScreen,
   TwoFactorScreen,
 } from "./auth/AuthScreens";
+import { KycApprovedScreen, KycPendingScreen, KycRejectedScreen, KycStartScreen } from "./kyc/KycScreens";
+import { CardsScreen, HomeScreen, NotificationsScreen, StatementScreen } from "./home/HomeScreens";
 
 export type FlowRoute = {
   /** "/" | "loans" | ":id". Nested under the parent's path. */
@@ -57,6 +59,10 @@ export const routes: FlowRoute[] = [
   { path: "sign-up", component: SignUpScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Create account" } },
   { path: "verify-email", component: EmailVerificationScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Verify email" } },
   { path: "verify-phone", component: PhoneVerificationScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Verify phone" } },
+  { path: "kyc", component: KycStartScreen, meta: { role: "user", flow: "Onboarding and KYC", label: "Start identity verification" } },
+  { path: "kyc-pending", component: KycPendingScreen, meta: { role: "user", flow: "Onboarding and KYC", label: "Verification pending" } },
+  { path: "kyc-approved", component: KycApprovedScreen, meta: { role: "user", flow: "Onboarding and KYC", label: "Verification approved" } },
+  { path: "kyc-rejected", component: KycRejectedScreen, meta: { role: "user", flow: "Onboarding and KYC", label: "Verification rejected" } },
   { path: "two-factor", component: TwoFactorScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Two-factor authentication" } },
   { path: "forgot-password", component: ForgotPasswordScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Forgot password" } },
   { path: "reset-password", component: ResetPasswordScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Set new password" } },
@@ -64,4 +70,8 @@ export const routes: FlowRoute[] = [
   { path: "profile", component: ProfileScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Profile and notifications" } },
   { path: "password", component: PasswordScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Manage password" } },
   { path: "security", component: SecurityScreen, meta: { role: "user", flow: "Sign In / Log Out", label: "Security and 2FA" } },
+  { path: "home", component: HomeScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Home dashboard" } },
+  { path: "cards", component: CardsScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Cards" } },
+  { path: "notifications", component: NotificationsScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Notifications" } },
+  { path: "statement", component: StatementScreen, meta: { role: "user", flow: "User Profile & Home Dashboard", label: "Account statement" } },
 ];

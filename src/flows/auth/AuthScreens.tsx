@@ -21,21 +21,8 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/comp
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Heading, Text } from "@/shared/ui/typography";
+import { type Profile, mockProfile } from "../_mocks/account";
 import AuthFrame from "./AuthFrame";
-
-type Profile = {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-};
-
-const mockProfile: Profile = {
-  name: "Alex Morgan",
-  email: "alex.morgan@example.com",
-  phone: "+1 (415) 555-0137",
-  address: "225 Market Street, San Francisco, CA 94105",
-};
 
 function ContinueButton({ children = "Continue" }: { children?: string }) {
   return (
@@ -228,7 +215,7 @@ export function EmailVerificationScreen() {
 }
 
 export function PhoneVerificationScreen() {
-  return <VerificationScreen channel="phone" destination="+1 (415) 555-0137" next="/two-factor" />;
+  return <VerificationScreen channel="phone" destination="+1 (415) 555-0137" next="/kyc" />;
 }
 
 export function TwoFactorScreen() {
@@ -240,7 +227,7 @@ export function TwoFactorScreen() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          navigate({ to: "/account" });
+          navigate({ to: "/home" });
         }}
       >
         <FieldGroup>
@@ -266,7 +253,7 @@ export function TwoFactorScreen() {
       <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
         <Separator className="flex-1" /> or <Separator className="flex-1" />
       </div>
-      <Button variant="outline" size="lg" className="w-full" onClick={() => navigate({ to: "/account" })}>
+      <Button variant="outline" size="lg" className="w-full" onClick={() => navigate({ to: "/home" })}>
         <Smartphone aria-hidden="true" /> Use Face ID or Touch ID
       </Button>
       <Text variant="small" className="mt-5 text-center">
